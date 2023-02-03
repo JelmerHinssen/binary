@@ -119,3 +119,30 @@ inline Allocator::HashMap::Iterator& Allocator::HashMap::Iterator::operator++() 
 	return *this;
 }
 
+
+#ifdef SHILM_ENABLE_ALLOCATOR
+
+void* operator new(size_t size) {
+    //std::cout << "new" << std::endl;
+	return shilm::memory::Allocator::getDefault().allocate(size, false);
+}
+
+void operator delete(void* p) {
+    /*std::cout << "delete" << std::endl;
+    char names[8][256];
+    shilm::memory::Stacktrace<8>::getStacktrace(0).getNames(names);
+    for (int i = 0; i < 8; i++) {
+        std::cout << names[i] << std::endl;
+    }*/
+	shilm::memory::Allocator::getDefault().release(p, false);
+}
+
+void* operator new[](size_t size) {
+	return shilm::memory::Allocator::getDefault().allocate(size, true);
+}
+
+void operator delete[](void* p) {
+	shilm::memory::Allocator::getDefault().release(p, true);
+}
+
+#endif

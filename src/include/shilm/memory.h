@@ -13,10 +13,10 @@
 #undef SHILM_ENABLE_STACKTRACE
 #endif
 
-#define strcpy_s(dest, src) strcpy(dest, src)
-#define strcat_s(dest, size, src) strcat(dest, src)
-#define _splitpath_s(full, drive, drivesize, path, pathsize, name, namesize, ext, extsize) _splitpath(full, drive, path, name, ext)
-#define strnlen_s(str, size) strnlen(str, size)
+// #define strcpy_s(dest, src) strcpy(dest, src)
+// #define strcat_s(dest, size, src) strcat(dest, src)
+// #define _splitpath_s(full, drive, drivesize, path, pathsize, name, namesize, ext, extsize) _splitpath(full, drive, path, name, ext)
+// #define strnlen_s(str, size) strnlen(str, size)
 
 namespace shilm {
 	namespace memory {
@@ -71,21 +71,21 @@ namespace shilm {
 							//}
 							strcat_s(names[i], 256, "(");
 							size_t len = strnlen_s(names[i], 256);
-							sprintf_s(names[i] + len, "%lu", line.LineNumber);
+							sprintf_s(names[i] + len, 256 - len, "%lu", line.LineNumber);
 							//_itoa_s(line.LineNumber, names[i] + len, 256 - len, 10);
 							strcat_s(names[i], 256, ")");
 							strcat_s(names[i], 256, ")");
 						} else {
 							strcpy_s(names[i], symbol->Name);
-							sprintf_s(names[i] + symbol->NameLen, "(%lu)", GetLastError());
+							sprintf_s(names[i] + symbol->NameLen, 256 - symbol->NameLen, "(%lu)", GetLastError());
 						}
 						//cout << symbol->Name << endl;
 					} else {
-						sprintf_s(names[i], "%p (%lu)", trace[i], GetLastError());
+						sprintf_s(names[i], 256, "%p (%lu)", trace[i], GetLastError());
 					}
 #else
 					for (int j = 0; j < sizeof(void*) / 4; j++) {
-						sprintf_s(names[i], "%p", trace[i]);
+						sprintf_s(names[i], 256, "%p", trace[i]);
 					}
 #endif
 				}
@@ -199,27 +199,9 @@ namespace shilm {
 
 #ifdef SHILM_ENABLE_ALLOCATOR
 
-inline void* operator new(size_t size) {
-    //std::cout << "new" << std::endl;
-	return shilm::memory::Allocator::getDefault().allocate(size, false);
-}
-
-inline void operator delete(void* p) {
-    /*std::cout << "delete" << std::endl;
-    char names[8][256];
-    shilm::memory::Stacktrace<8>::getStacktrace(0).getNames(names);
-    for (int i = 0; i < 8; i++) {
-        std::cout << names[i] << std::endl;
-    }*/
-	shilm::memory::Allocator::getDefault().release(p, false);
-}
-
-inline void* operator new[](size_t size) {
-	return shilm::memory::Allocator::getDefault().allocate(size, true);
-}
-
-inline void operator delete[](void* p) {
-	shilm::memory::Allocator::getDefault().release(p, true);
-}
+void* operator new(size_t size);
+void operator delete(void* p);
+void* operator new[](size_t size);
+void operator delete[](void* p);
 
 #endif
