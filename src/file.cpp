@@ -1,6 +1,7 @@
 #include "file.h"
 
 using namespace shilm::io;
+using namespace std;
 
 File& File::operator<<(const char* s) {
 	if (fp) {
@@ -25,7 +26,7 @@ File& File::operator<<(unsigned long s) {
 
 File& File::operator<<(size_t s) {
 	if (fp) {
-		fprintf(fp, "%u", s);
+		fprintf(fp, "%llu", s);
 	}
 	return *this;
 }

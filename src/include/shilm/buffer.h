@@ -162,7 +162,7 @@ namespace shilm {
 			virtual std::size_t readraw(char* dest, std::size_t size) = 0;
 			inline uint8_t read() override {
 				if (eof()) {
-					return -1;
+					return (uint8_t) -1;
 				}
 				if (mBufferPos == mBufferSize) {
 					refill();

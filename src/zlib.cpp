@@ -107,13 +107,13 @@ void ZlibReader::nextBlock() {
     }
     mEob = false;
     mFinal = mStream.readBits(1) == 1;
-    mCompression = mStream.readBits(2);
+    mCompression = mStream.readBits<uint8_t>(2);
     mPos = 0;
     switch (mCompression) {
         case NO_COMPRESSION: {
             mStream.flushByte();
-            int16_t len = mStream.readBits(16);
-            int16_t nlen = mStream.readBits(16);
+            int16_t len = mStream.readBits<int16_t>(16);
+            int16_t nlen = mStream.readBits<int16_t>(16);
             if (len != ~nlen)
                 throw std::runtime_error("len != ~nlen");
             mLength = len;
@@ -242,7 +242,7 @@ uint8_t ZlibReader::read() {
             unsigned int length;
             int action = readNextCode(mHuffmanTree.first);
             if (action < 256) {
-				mBuffer.addCyclic(action);
+				mBuffer.addCyclic((unsigned char) action);
                 continue;
             } else if (action == 256) {
                 mEob = true;
@@ -276,7 +276,7 @@ uint8_t ZlibReader::read() {
         }
     }
     if (mEof) {
-        return -1;
+        return (uint8_t) -1;
     }
 	int bufPos = mBufferPos;
 	mBufferPos++;

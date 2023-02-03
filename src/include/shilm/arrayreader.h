@@ -19,7 +19,7 @@ public:
 
     virtual uint8_t read() override {
         if (eof()) {
-            return -1;
+            return (uint8_t) -1;
         }
         return mData[mIndex++];
     }

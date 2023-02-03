@@ -11,11 +11,11 @@ using namespace shilm::io;
 using namespace std;
 
 Color Bitmap::getPixel(int x, int y) {
-    return Color(data + y * rowbytesize + (bitsPerPixel * x / 8), bitsPerPixel, (x * bitsPerPixel % 8));
+    return Color(data + y * rowbytesize + (bitsPerPixel * x / 8), (unsigned char) bitsPerPixel, (unsigned char) (x * bitsPerPixel % 8));
 }
 
 const Color Bitmap::getPixel(int x, int y) const {
-    return Color(data + y * rowbytesize + (bitsPerPixel * x / 8), bitsPerPixel, (x * bitsPerPixel % 8));
+    return Color(data + y * rowbytesize + (bitsPerPixel * x / 8), (unsigned char) bitsPerPixel, (unsigned char) (x * bitsPerPixel % 8));
 }
 
 Bitmap::~Bitmap() {
@@ -32,7 +32,6 @@ Bitmap::Bitmap(int width, int height, int bpp, int align, io::BinaryReader& read
 Bitmap::Bitmap(io::BinaryReader& reader, bool useColorTable) {
     ownsData = false;
     reader.readShort(); // skip 2 bytes
-    int size = reader.readInt();
     reader.readInt();   // skip 4 reserved bytes
     int dataPoint = reader.readInt();
     //cout << dataPoint << endl;
@@ -212,7 +211,7 @@ void Bitmap::operator=(Bitmap&& other) {
     other.ownsData = false; // prevent other from deleting their data
 }
 
-Bitmap::Bitmap(const std::string& filename, bool useColorTable) {
+Bitmap::Bitmap([[maybe_unused]] const std::string& filename, [[maybe_unused]] bool useColorTable) {
     throw runtime_error("Not supported yet");
 }
 
@@ -236,7 +235,7 @@ io::BinaryWriter& shilm::image::operator<<(io::BinaryWriter& writer, const Bitma
     writer.writeInt(bmp.width);     // Image width
     writer.writeInt(bmp.height);    // Image height
     writer.writeShort(1);           // Color planes
-    writer.writeShort(bmp.bitsPerPixel);    // Bits per pixel
+    writer.writeShort((uint16_t) bmp.bitsPerPixel);    // Bits per pixel
     writer.writeInt(0);             // Compression
     writer.writeInt(imageSize);     // Image size
     writer.writeInt(0);             // Horizontal resolution
@@ -255,9 +254,9 @@ io::BinaryWriter& shilm::image::operator<<(io::BinaryWriter& writer, const Bitma
     }
 
     // Data
-    int extraBits = rowsize * 8 - bmp.width * bmp.bitsPerPixel;
-	// Writing the entire array at once is MUCH more efficient, but isn't portable.
+	// Writing the entire array at once is MUCH more efficient, but isn't portable because of endianness.
 	writer.write((char*)bmp.data, bmp.height * bmp.rowbytesize); 
+    // int extraBits = rowsize * 8 - bmp.width * bmp.bitsPerPixel;
     /*for (int i = 0; i < bmp.height; i++) {
         for (int j = 0; j < bmp.width; j++) {
             writer.writeBits(bmp[i][j], bmp.bitsPerPixel);

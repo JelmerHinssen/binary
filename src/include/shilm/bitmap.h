@@ -15,7 +15,7 @@ namespace image {
 class SHILM_IO_EXPORT Color {
 public:
     Color(char* location, unsigned char size, unsigned char offset):
-        loc(location), size(size), off(std::max(8 - offset - size, 0)) {
+        loc(location), size(size), off((unsigned char)std::max(8 - offset - size, 0)) {
             assert(offset + size <= 8 * sizeof(int));
             assert(offset < 8);
             assert(size < 8 || off == 0);

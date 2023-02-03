@@ -35,7 +35,7 @@ void BinaryWriter::writebits(uint64_t value, int count) {
     //cout << "Value: " << value << endl;
     for (int i = 0; i < count; i++) {
         if (isFlipped()) {
-            writeBit((uint8_t)( (value & (1 << i)) >> i));
+            writeBit((uint8_t)( (value & (1ull << i)) >> i));
         } else {
             writeBit((uint8_t) value & 1);
             value >>= 1;
@@ -60,7 +60,7 @@ void BinaryStreamWriter::write(uint8_t b) {
 }
 
 size_t BinaryStreamWriter::write(const char* src, size_t size) {
-	mBuffer.add((unsigned char*) src, size, *this);
+	mBuffer.add((unsigned char*) src, (unsigned int) size, *this);
 	return size;
 }
 
@@ -89,7 +89,7 @@ void BinaryWriter::writeLong(uint64_t val) {
 }
 
 void BinaryWriter::writeString(const std::string& str) {
-    writeInt(str.size());
+    writeInt((uint32_t) str.size());
     write(str.c_str(), str.size());
 }
 

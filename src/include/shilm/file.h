@@ -1,14 +1,15 @@
 #pragma once
+#define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 
-inline errno_t fopen_s(FILE * * streamptr, const char * filename, const char * mode) {
-    if (streamptr) {
-        *streamptr = fopen(filename, mode);
-        return 0;
-    }
-    return 1;
-}
-#define sprintf_s(buffer, format, ...) sprintf(buffer, format, ##__VA_ARGS__)
+// inline errno_t fopen_s(FILE * * streamptr, const char * filename, const char * mode) {
+//     if (streamptr) {
+//         *streamptr = fopen(filename, mode);
+//         return 0;
+//     }
+//     return 1;
+// }
+// #define sprintf_s(buffer, format, ...) sprintf(buffer, format, ##__VA_ARGS__)
 
 namespace shilm {
 	namespace io {

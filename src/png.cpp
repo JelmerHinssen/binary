@@ -65,15 +65,15 @@ inline uint8_t PNGStream::calculate(uint8_t input) {
         return input + (a + b) / 2;
     case PAETH: {
         uint8_t p = a + b - c;
-        uint8_t pa = abs(p - a);
-        uint8_t pb = abs(p - b);
-        uint8_t pc = abs(p - c);
+        uint8_t pa = (uint8_t) abs(p - a);
+        uint8_t pb = (uint8_t) abs(p - b);
+        uint8_t pc = (uint8_t) abs(p - c);
         if (pa <= pb && pa <= pc) return input + a;
         else if (pb <= pc) return input + b;
         else return input + c;
     }
     default:
-        return -1;
+        return (uint8_t) -1;
     }
 }
 
@@ -115,8 +115,8 @@ Bitmap Bitmap::createFromPNG(const std::string& filename) {
     bmp.height = bin.readInt();
     int bpp = bin.readByte();
     int colorType = bin.readByte();
-    int compression = bin.readByte();
-    int filter = bin.readByte();
+    /*int compression = */bin.readByte();
+    /*int filter = */bin.readByte();
     int interlace = bin.readByte();
     unsigned int pos = 13;
     for (unsigned int i = 0; i < length - pos; i++) {
@@ -169,8 +169,8 @@ Bitmap Bitmap::createFromPNG(const std::string& filename) {
             if (colorType == 3 && !PLTE) throw runtime_error("Missing PLTE");
             if (IDAT && !lastIDAT) throw runtime_error("Gap between IDAT");
             if (!IDAT) {
-                int compressionMethod = bin.readByte();
-                int flags = bin.readByte();
+                /*int compressionMethod = */bin.readByte();
+                /*int flags = */bin.readByte();
                 pos = 2;
                 //zlib.start();
             }

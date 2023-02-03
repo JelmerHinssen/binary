@@ -24,7 +24,7 @@ void* Allocator::allocate(size_t size, bool isarray) {
 	if ((info = traces.get(trace.hash)) != nullptr) {
 		log << " this trace already exists";
 	} else {
-		if (!(info = traces.add(trace))) {
+		if ((info = traces.add(trace)) == nullptr) {
 			// TODO cleanup
 			overflow = true;
 		}

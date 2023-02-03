@@ -18,7 +18,7 @@ public:
 		mBuffer.add(b, (BinaryWriter&) *this);
     }
 	inline virtual size_t write(const char* src, size_t size) override {
-		mBuffer.add((unsigned char*) src, size, *this);
+		mBuffer.add((unsigned char*) src, (unsigned int) size, *this);
 		return size;
 	}
     inline virtual void flushStream() override {
