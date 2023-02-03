@@ -1,0 +1,7 @@
+rm -rf binary
+mkdir binary
+mkdir binary/lib
+mkdir binary/include
+cp bin/binary.lib binary/lib
+cp bin/binaryd.lib binary/lib
+cp -r src/include/shilm binary/include
