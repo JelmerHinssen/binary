@@ -57,6 +57,7 @@ void* Allocator::allocate(size_t size, bool isarray) {
 }
 
 void Allocator::release(void* p, bool isarray) {
+	if (!p) return;
 	char* data = ((char*)p) - sizeof(DWORD) - sizeof(size_t);
 	int offset = 0;
 	ULONG hash = *((DWORD*)(data + offset));
