@@ -93,7 +93,7 @@ namespace shilm {
 		};
 		class Allocator {
 		public:
-			static const int TRACE_SIZE = 8;
+			static const int TRACE_SIZE = 16;
 			static Allocator& getDefault() {
 				static Allocator all;
 				return all;
@@ -190,6 +190,7 @@ namespace shilm {
 			size_t totalAllocated;
 			size_t totalObjects;
 			io::File log;
+			bool logging = false;
 			//std::ofstream log;
 
 			bool overflow = false;

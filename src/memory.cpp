@@ -10,7 +10,7 @@ using namespace shilm::io;
 
 void* Allocator::allocate(size_t size, bool isarray) {
 	bool reopen = !log;
-	if (reopen) {
+	if (logging && reopen) {
 		log.open("log.txt", "a");
 		log << "Allocating after destruction!!! " << endl;
 	}
@@ -19,23 +19,25 @@ void* Allocator::allocate(size_t size, bool isarray) {
 		throw bad_alloc();
 	}
 	Stacktrace<TRACE_SIZE> trace = Stacktrace<TRACE_SIZE>::getStacktrace(2);
-	log << "Trace hash is " << trace.hash;
+	if (logging) log << "Trace hash is " << trace.hash;
 	StacktraceInfo* info;
 	if ((info = traces.get(trace.hash)) != nullptr) {
-		log << " this trace already exists";
+		if (logging) log << " this trace already exists";
 	} else {
 		if ((info = traces.add(trace)) == nullptr) {
 			// TODO cleanup
 			overflow = true;
 		}
 	}
-	log << ". It ";
-	if (isarray) {
-		log << "allocated " << size << " bytes of memory for array at " << (void*)p;
-	} else {
-		log << "allocated " << size << " bytes of memory at " << (void*)p;
+	if (logging)  {
+		log << ". It ";
+		if (isarray) {
+			log << "allocated " << size << " bytes of memory for array at " << (void*)p;
+		} else {
+			log << "allocated " << size << " bytes of memory at " << (void*)p;
+		}
+		log << endl;
 	}
-	log << endl;
 	totalAllocated += size;
 	totalObjects++;
 	if (info) {
@@ -43,7 +45,7 @@ void* Allocator::allocate(size_t size, bool isarray) {
 		info->allocatedObjects++;
 	}
 	log.flush();
-	if (reopen) {
+	if (reopen && logging) {
 		log << "Closing again..." << endl;
 		log << "Unallocated memory: " << totalAllocated << endl;
 		log << "Total objects: " << totalObjects << endl;
@@ -65,15 +67,17 @@ void Allocator::release(void* p, bool isarray) {
 	size_t size = *((size_t*)(data + offset));
 	offset += sizeof(size_t);
 	bool reopen = !log;
-	if (reopen) {
-		log.open("log.txt", "a");
-		log << "Releasing after destruction!!! " << endl;
+	if (logging) {
+		if (reopen) {
+			log.open("log.txt", "a");
+			log << "Releasing after destruction!!! " << endl;
+		}
+		log << "Unallocating " << (isarray ? "array " : "") << p;
+		log << ". It is actually " << (void*)data << ".";
+		log << " The trace was " << hash << ".";
+		log << " There were " << size << " bytes.";
+		log << endl;
 	}
-	log << "Unallocating " << (isarray ? "array " : "") << p;
-	log << ". It is actually " << (void*)data << ".";
-	log << " The trace was " << hash << ".";
-	log << " There were " << size << " bytes.";
-	log << endl;
 	StacktraceInfo* info = traces.get(hash);
 	if (info) {
 		info->allocatedMemory -= size;
@@ -81,12 +85,14 @@ void Allocator::release(void* p, bool isarray) {
 	}
 	totalAllocated -= size;
 	totalObjects--;
+	if (logging) {
 	log.flush();
-	if (reopen) {
-		log << "Closing again..." << endl;
-		log << "Unallocated memory: " << totalAllocated << endl;
-		log << "Total objects: " << totalObjects << endl;
-		log.close();
+		if (reopen) {
+			log << "Closing again..." << endl;
+			log << "Unallocated memory: " << totalAllocated << endl;
+			log << "Total objects: " << totalObjects << endl;
+			log.close();
+		}
 	}
 	free(data);
 }
