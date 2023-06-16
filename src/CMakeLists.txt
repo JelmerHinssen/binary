@@ -44,7 +44,7 @@ target_link_libraries(binary_lib binary_options ${all_libraries})
 target_link_libraries(binary_lib_alloc binary_options ${all_libraries})
 target_link_libraries(binary_lib_stack binary_options ${all_libraries} Dbghelp.lib)
 target_link_libraries(binary_lib_alloc_stack binary_options ${all_libraries} Dbghelp.lib)
-target_link_libraries(binary_run binary_lib_stack binary_options)
+target_link_libraries(binary_run binary_lib binary_lib_stack binary_options)
 
 set_target_properties(binary_run PROPERTIES OUTPUT_NAME binary)
 set_target_properties(binary_lib PROPERTIES OUTPUT_NAME binary)
