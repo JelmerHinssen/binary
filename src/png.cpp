@@ -190,7 +190,6 @@ Bitmap Bitmap::createFromPNG(const std::string& filename) {
     }
     zlib.finish();
     signature = bin.readInt();
-    cout << output.getData().size() << endl;
     ArrayReader input(output.getData(), ENDIAN, BITORDER);
     bmp.loadData(1, input, 0, true);
     Bitmap flipped(bmp.flip(false, true));

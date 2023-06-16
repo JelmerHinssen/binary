@@ -28,6 +28,16 @@ public:
             val %= (1 << size);
         return val;
     }
+    unsigned int argb() const {
+        unsigned int val = (unsigned int) *this;
+        if (size == 24) {
+            return val + 0xff000000;
+        } else if (size < 8) {
+            unsigned int s = (val << 8) / (1 << size);
+            return (s << 16) + (s << 8) + s + 0xff000000;
+        }
+        return val;
+    }
     void operator=(int val) {
         int& des = *((int*) loc);
         if (size == sizeof(int) * 8) { // << 32 isn't defined so this check is nessesary
@@ -126,8 +136,10 @@ public:
         ownsData = false;
         return data;
     }
+    bool operator==(const Bitmap& other) const;
 private:
     void loadData(int align, io::BinaryReader& reader, int ctbpp, bool flipEndianness);
+    void reverseRows();
     int width, height;
     int rowbytesize;
     int bitsPerPixel;

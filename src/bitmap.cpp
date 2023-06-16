@@ -107,6 +107,16 @@ Bitmap::Bitmap(io::BinaryReader& reader, bool useColorTable) {
         ctbpp = 0;
     }
     loadData(4, reader, ctbpp, false);
+    // reverseRows();
+}
+
+void Bitmap::reverseRows() {
+    vector<char> tmpRow(rowbytesize);
+    for (int i = 0; i * 2 < height; i++) {
+        memcpy_s(&tmpRow[0], rowbytesize, &data[rowbytesize * i], rowbytesize);
+        memcpy_s(&data[rowbytesize * i], rowbytesize, &data[rowbytesize * (height - i - 1)], rowbytesize);
+        memcpy_s(&data[rowbytesize * (height - i - 1)], rowbytesize, &tmpRow[0], rowbytesize);
+    }
 }
 
 void Bitmap::loadData(int align, io::BinaryReader& reader, int ctbpp, bool flipEndianness) {
@@ -297,6 +307,17 @@ Bitmap Bitmap::ARGBtoRGBA() {
         }
     }
     return bmp;
+}
+
+bool Bitmap::operator==(const Bitmap& other) const {
+    if (getWidth() != other.getWidth()) return false;
+    if (getHeight() != other.getHeight()) return false;
+    for (int i = 0; i < getHeight(); i++) {
+        for (int j = 0; j < getWidth(); j++) {
+            if (getPixel(j, i).argb() != other.getPixel(j, i)) return false;
+        }
+    }
+    return true;
 }
 
 /*int main() {
