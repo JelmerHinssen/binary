@@ -23,7 +23,7 @@ void sig(int sign) {
 }
 
 int main() {
-    // Bitmap bmp = Bitmap::createFromPNG("backgroundmain.png");
+    Bitmap bmp = Bitmap::createFromPNG("backgroundmain.png");
     // cout << "Read" << endl;
     // ofstream of("backgroundmain.bmp", ios::binary);
     // BinaryStreamWriter bof(of, BinaryStreamWriter::LITTLE_ENDIAN, BinaryStreamReader::LEAST_SIGNIFICANT_BIT_FIRST_FLIPPED);

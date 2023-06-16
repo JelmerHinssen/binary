@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cstring>
 #include <vector>
+#include "filereader.h"
 
 using namespace shilm;
 using namespace shilm::image;
@@ -49,7 +50,8 @@ Bitmap::Bitmap(io::BinaryReader& reader, bool useColorTable) {
         reader.readShort(); // skip 2 bytes: color planes
         bitsPerPixel = reader.readShort();
         ctbpp = 24;
-    } else if (headerSize >= 40) {
+    } else if (headerSize >= 54) {
+        reader.readInt(); // skip 4 bytes?
         width = reader.readInt();
         height = reader.readInt();
         reader.readShort(); // skip 2 bytes: color planes
@@ -60,7 +62,7 @@ Bitmap::Bitmap(io::BinaryReader& reader, bool useColorTable) {
         reader.readInt(); // skip 4 bytes: vertical resolution
         numColors = reader.readInt(); // 4 bytes: number of colors in palette
         reader.readInt(); // skip 4 bytes: number of important colors
-        for (int i = 0; i < 40 - headerSize; i++) { // Skip remaining header
+        for (int i = 0; i < headerSize - 54; i++) { // Skip remaining header
             reader.readByte();
         }
     } else {
@@ -211,8 +213,13 @@ void Bitmap::operator=(Bitmap&& other) {
     other.ownsData = false; // prevent other from deleting their data
 }
 
-Bitmap::Bitmap([[maybe_unused]] const std::string& filename, [[maybe_unused]] bool useColorTable) {
-    throw runtime_error("Not supported yet");
+
+Bitmap Bitmap::loadBitmap([[maybe_unused]] const std::string& filename, [[maybe_unused]] bool useColorTable) {
+    ifstream in(filename, ios::binary);
+    const int ENDIAN = BinaryReader::LITTLE_ENDIAN;
+    const int BITORDER = BinaryReader::MOST_SIGNIFICANT_BIT_FIRST;
+    BinaryStreamReader bin(in, ENDIAN, BITORDER);
+    return Bitmap(bin, useColorTable);
 }
 
 io::BinaryWriter& shilm::image::operator<<(io::BinaryWriter& writer, const Bitmap& bmp) {

@@ -77,7 +77,7 @@ public:
     /**
     Reads a bitmap from a .bmp file
     */
-    Bitmap(const std::string& filename, bool useColorTable = true);
+    static Bitmap loadBitmap(const std::string& filename, bool useColorTable = true);
     virtual ~Bitmap();
     Bitmap(const Bitmap& other);
     Bitmap(Bitmap&& other);
