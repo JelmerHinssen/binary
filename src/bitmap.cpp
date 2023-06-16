@@ -309,12 +309,28 @@ Bitmap Bitmap::ARGBtoRGBA() {
     return bmp;
 }
 
+Bitmap Bitmap::RGBtoARGB() {
+    assert(bitsPerPixel == 24);
+    int newRowbytesize = width * 4;
+    char* copy = new char[newRowbytesize * height];
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            uint32_t val = (*this)[i][j];
+            uint32_t* dst = (uint32_t*)(&copy[i * newRowbytesize + j * 4]);
+            *dst = 0xff000000 + val;
+        }
+    }
+    Bitmap ans(width, height, 32, copy);
+    ans.ownsData = true;
+    return ans;
+}
+
 bool Bitmap::operator==(const Bitmap& other) const {
     if (getWidth() != other.getWidth()) return false;
     if (getHeight() != other.getHeight()) return false;
     for (int i = 0; i < getHeight(); i++) {
         for (int j = 0; j < getWidth(); j++) {
-            if (getPixel(j, i).argb() != other.getPixel(j, i)) return false;
+            if (getPixel(j, i).argb() != other.getPixel(j, i).argb()) return false;
         }
     }
     return true;

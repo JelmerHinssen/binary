@@ -126,6 +126,7 @@ public:
     }
     static Bitmap createFromPNG(const std::string& filename);
     Bitmap ARGBtoRGBA();
+    Bitmap RGBtoARGB();
     const char* getData() const {
         return data;
     }

@@ -21,6 +21,14 @@ TEST(Image, pngA) {
     EXPECT_EQ(m.getPixel(0, 15).argb(), 0xff5bc2ee);
 }
 
+TEST(Image, addAlpha) {
+    Bitmap a = Bitmap::createFromPNG("test/img/1a.png");
+    Bitmap b = a.RGBtoARGB();
+    EXPECT_EQ(a, b);
+    EXPECT_EQ(a.getPixel(0, 0), 0xf7ffffu);
+    EXPECT_EQ(b.getPixel(0, 0), 0xfff7ffff);
+}
+
 TEST(Image, pngB) {
     Bitmap m = Bitmap::createFromPNG("test/img/1c.png");
     ASSERT_EQ(m.getWidth(), 16);
@@ -35,6 +43,7 @@ TEST(Image, allSame) {
     Bitmap c = Bitmap::createFromPNG("test/img/1c.png");
     Bitmap d = Bitmap::loadBitmap("test/img/1d.bmp");
     EXPECT_EQ(a, c);
+    EXPECT_EQ(a, a);
     EXPECT_EQ(a, d);
     EXPECT_EQ(c, d);
 }
